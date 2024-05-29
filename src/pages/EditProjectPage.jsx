@@ -1,21 +1,35 @@
-// src/pages/CreateProjectPage.jsx
+// src/pages/EditProjectPage.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
 const API_URL = "https://project-management-api-4641927fee65.herokuapp.com";
 
-function CreateProjectPage(props) {
+function EditProjectPage(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
+  const { projectId } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getProjectToEdit = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/projects/${projectId}`);
+        console.log(response);
+        setTitle(response.data.title);
+        setDescription(response.data.description);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProjectToEdit();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(API_URL + "/projects", {
+      const response = await axios.put(`${API_URL}/projects/${projectId}`, {
         title,
         description,
       });
@@ -27,8 +41,8 @@ function CreateProjectPage(props) {
   };
 
   return (
-    <div className="CreateProjectPage">
-      <h3>Add Project</h3>
+    <div className="EditProjectPage">
+      <h3>Edit the Project</h3>
 
       <form onSubmit={handleSubmit}>
         <label>Title:</label>
@@ -41,16 +55,15 @@ function CreateProjectPage(props) {
 
         <label>Description:</label>
         <textarea
-          type="text"
           name="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <button type="submit">Submit</button>
+        <button type="submit">Update Project</button>
       </form>
     </div>
   );
 }
 
-export default CreateProjectPage;
+export default EditProjectPage;

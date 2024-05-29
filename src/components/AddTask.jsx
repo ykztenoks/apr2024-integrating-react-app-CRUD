@@ -1,34 +1,38 @@
-// src/pages/CreateProjectPage.jsx
+// src/components/AddTask.jsx
 
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const API_URL = "https://project-management-api-4641927fee65.herokuapp.com";
 
-function CreateProjectPage(props) {
+function AddTask({ projectId, getProject }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const navigate = useNavigate();
-
+  //.post(`${API_URL}/tasks`, requestBody)
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post(API_URL + "/projects", {
+      const response = await axios.post(`${API_URL}/tasks`, {
         title,
         description,
+        projectId,
       });
-      console.log(response);
-      navigate("/projects");
+
+      if (response.status === 200 || response.status === 201) {
+        getProject();
+        setTitle("");
+        setDescription("");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <div className="CreateProjectPage">
-      <h3>Add Project</h3>
+    <div className="AddTask">
+      <h3>Add New Task</h3>
 
       <form onSubmit={handleSubmit}>
         <label>Title:</label>
@@ -47,10 +51,10 @@ function CreateProjectPage(props) {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <button type="submit">Submit</button>
+        <button type="submit">Add Task</button>
       </form>
     </div>
   );
 }
 
-export default CreateProjectPage;
+export default AddTask;
