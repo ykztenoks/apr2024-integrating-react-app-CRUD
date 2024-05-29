@@ -12,8 +12,16 @@ function AddTask({ projectId, getProject }) {
   //.post(`${API_URL}/tasks`, requestBody)
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("THIS IS THE REQUEST BODY -> ", {
+      title,
+      description,
+      projectId,
+    });
     try {
+      if (!title || !description) {
+        alert("You have to provide all the values");
+        return;
+      }
       const response = await axios.post(`${API_URL}/tasks`, {
         title,
         description,
